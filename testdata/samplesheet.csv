@@ -1,2 +1,2 @@
 sample,bam,vcf,vep
-test_sample,,/home/afonso/claudeScience/genomechronicler-nf/testdata/test_sample.g.vcf,
+test_sample,,testdata/test_sample.g.vcf,

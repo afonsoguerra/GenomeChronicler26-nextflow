@@ -1,2 +1,2 @@
 sample,bam,vcf,vep
-NA12878,,/home/afonso/claudeScience/genomechronicler-nf/testdata/NA12878.g.vcf.gz,
+NA12878,,testdata/NA12878.g.vcf.gz,

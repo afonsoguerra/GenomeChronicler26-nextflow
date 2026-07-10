@@ -91,8 +91,10 @@ fi
 
 # ---------- Create samplesheet ----------
 SAMPLESHEET="samplesheet_NA12878.csv"
+# Use path relative to the pipeline root so the samplesheet is portable
+RELATIVE_VCF="testdata/${FINAL_VCF}"
 echo "sample,bam,vcf,vep" > "${SAMPLESHEET}"
-echo "NA12878,,$(realpath ${FINAL_VCF})," >> "${SAMPLESHEET}"
+echo "NA12878,,${RELATIVE_VCF}," >> "${SAMPLESHEET}"
 
 echo ""
 echo "============================================"

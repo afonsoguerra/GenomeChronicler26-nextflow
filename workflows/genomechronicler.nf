@@ -6,8 +6,8 @@
 
     Samplesheet CSV format:
         sample,bam,vcf,vep
-        NA12878,,/path/to/NA12878.g.vcf.gz,
-        SAMPLE2,/path/to/SAMPLE2.bam,,/path/to/vep_summary.html
+        NA12878,,path/to/NA12878.g.vcf.gz,
+        SAMPLE2,path/to/SAMPLE2.bam,,path/to/vep_summary.html
 
     Rules:
       - Each row must have either a bam or vcf column filled (not both, not neither)
