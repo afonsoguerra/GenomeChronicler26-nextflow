@@ -24,3 +24,4 @@ nextflow
 
 # Synthetic test data scripts
 testdata/create_test_vcf.py
+testdata/samplesheet_real.csv
