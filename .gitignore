@@ -21,3 +21,6 @@ nextflow
 
 # OS
 .DS_Store
+
+# Synthetic test data scripts
+testdata/create_test_vcf.py

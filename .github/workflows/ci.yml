@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Nextflow config lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: "24.10.0"
+
+      - name: Validate Nextflow config
+        run: nextflow config -flat main.nf
+
+  test-synthetic:
+    name: Test with synthetic data
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nf-core/setup-nextflow@v2
+        with:
+          version: "24.10.0"
+
+      - name: Setup Apptainer
+        uses: eWaterCycle/setup-apptainer@v2
+        with:
+          apptainer-version: 1.3.4
+
+      - name: Generate synthetic test VCF
+        run: |
+          python3 << 'EOF'
+          import random, os
+          random.seed(42)
+          os.makedirs("testdata", exist_ok=True)
+          snps = []
+          for chrom in range(1, 23):
+              for i in range(20):
+                  pos = random.randint(100000, 50000000)
+                  rsid = f"rs{random.randint(1000, 99999999)}"
+                  snps.append((str(chrom), pos, rsid))
+          snps.sort(key=lambda x: (int(x[0]), x[1]))
+          with open("testdata/test_sample.g.vcf", "w") as f:
+              f.write("##fileformat=VCFv4.2\n")
+              f.write('##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">\n')
+              f.write('##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth">\n')
+              for c in sorted(set(s[0] for s in snps), key=int):
+                  f.write(f"##contig=<ID={c},length=248956422>\n")
+              f.write("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\ttest_sample\n")
+              for chrom, pos, rsid in snps:
+                  ref = random.choice(["A", "C", "G", "T"])
+                  alt = random.choice([b for b in ["A", "C", "G", "T"] if b != ref])
+                  gt = random.choice(["0/0", "0/1", "1/1"])
+                  dp = random.randint(20, 60)
+                  f.write(f"{chrom}\t{pos}\t{rsid}\t{ref}\t{alt}\t50\tPASS\t.\tGT:DP\t{gt}:{dp}\n")
+          print(f"Created test VCF with {len(snps)} variants")
+          EOF
+
+      - name: Prepare samplesheet
+        run: |
+          echo "sample,bam,vcf,vep" > testdata/samplesheet.csv
+          echo "test_sample,,testdata/test_sample.g.vcf," >> testdata/samplesheet.csv
+
+      - name: Run pipeline
+        run: |
+          nextflow run main.nf \
+            --input testdata/samplesheet.csv \
+            --outdir results_ci \
+            --threads 2 \
+            -profile apptainer
+
+      - name: Verify outputs
+        run: |
+          echo "=== Output files ==="
+          find results_ci -type f -exec ls -lh {} \;
+
+          # Verify PDF report exists and is valid
+          file results_ci/results_test_sample/*_report_*.pdf | grep -q "PDF document"
+          echo "✓ PDF report valid"
+
+          # Verify XLSX exists
+          file results_ci/results_test_sample/*genotypes*.xlsx | grep -q "Excel"
+          echo "✓ XLSX genotypes valid"
+
+          # Verify versions.yml
+          test -f results_ci/versions.yml
+          echo "✓ versions.yml present"
+
+          echo ""
+          echo "All output checks passed."
