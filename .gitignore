@@ -1,0 +1,23 @@
+# Nextflow runtime
+work/
+.nextflow/
+.nextflow.log*
+
+# Results (generated output)
+results*/
+
+# Container images
+*.sif
+*.img
+
+# Test data (downloaded, large)
+testdata/*.vcf.gz
+testdata/*.vcf.gz.tbi
+testdata/*.bed
+testdata/*.g.vcf
+
+# Nextflow binary
+nextflow
+
+# OS
+.DS_Store
