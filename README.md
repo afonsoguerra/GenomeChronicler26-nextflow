@@ -75,6 +75,23 @@ results/
 - `docker` — Use Docker container engine
 - `test` — Minimal test configuration
 
+## Test Data
+
+A download script is included to fetch the [GIAB](https://www.nist.gov/programs-projects/genome-bottle) NA12878 (HG001) v4.2.1 benchmark VCF for GRCh38 from the NCBI FTP:
+
+```bash
+# Download and prepare test data (~120 MB)
+bash bin/download_testdata.sh
+
+# Run pipeline with test data
+nextflow run main.nf \
+    --input testdata/samplesheet_NA12878.csv \
+    --outdir results_NA12878 \
+    -profile apptainer
+```
+
+The script downloads the GIAB benchmark VCF, strips the `chr` prefix to match GenomeChronicler's reference (GRCh38 without chr prefix), and creates a ready-to-use samplesheet. Expected runtime is ~2 minutes on 8 threads.
+
 ## Requirements
 
 - Nextflow >= 22.10.0
@@ -98,5 +115,6 @@ The pipeline is structured for future decomposition: the single `GENOMECHRONICLE
 
 ## Credits
 
-- [GenomeChronicler](https://github.com/PGP-UK/GenomeChronicler) stand-alone version
+- [GenomeChronicler](https://github.com/PGP-UK/GenomeChronicler) by PGP-UK
 - Original DSL1 wrapper by [cgpu](https://github.com/cgpu/genomechronicler-nf)
+- Pipeline built following [nf-core](https://nf-co.re/) best practices
