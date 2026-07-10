@@ -98,9 +98,5 @@ The pipeline is structured for future decomposition: the single `GENOMECHRONICLE
 
 ## Credits
 
-- [GenomeChronicler](https://github.com/PGP-UK/GenomeChronicler) by PGP-UK
+- [GenomeChronicler](https://github.com/PGP-UK/GenomeChronicler) stand-alone version
 - Original DSL1 wrapper by [cgpu](https://github.com/cgpu/genomechronicler-nf)
-- Pipeline built following [nf-core](https://nf-co.re/) best practices
-# GenomeChronicler26-nextflow
-# GenomeChronicler26-nextflow
-# GenomeChronicler26-nextflow
