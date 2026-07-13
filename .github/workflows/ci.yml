@@ -80,7 +80,7 @@ jobs:
             --input testdata/samplesheet.csv \
             --outdir results_ci \
             --threads 2 \
-            -profile apptainer
+            -profile test,apptainer
 
       - name: Verify outputs
         run: |
