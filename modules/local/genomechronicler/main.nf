@@ -23,7 +23,7 @@ process GENOMECHRONICLER_RUN {
     publishDir "${params.outdir}", mode: 'copy', pattern: '**'
 
     input:
-    tuple val(meta), path(bam, arity: '0..1'), path(vcf, arity: '0..1'), path(vep, arity: '0..1')
+    tuple val(meta), path(bam), path(vcf), path(vep)
 
     output:
     tuple val(meta), path("results_${meta.id}/*_report_*.pdf"), emit: report
@@ -36,9 +36,9 @@ process GENOMECHRONICLER_RUN {
     task.ext.when == null || task.ext.when
 
     script:
-    def has_bam = bam instanceof List ? false : true
-    def has_vcf = vcf instanceof List ? false : true
-    def has_vep = vep instanceof List ? false : true
+    def has_bam = bam.name != 'NO_FILE'
+    def has_vcf = vcf.name != 'NO_FILE2'
+    def has_vep = vep.name != 'NO_FILE3'
 
     if (!has_bam && !has_vcf) {
         error "Sample ${meta.id}: neither BAM nor VCF provided"
