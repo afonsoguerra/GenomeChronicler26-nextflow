@@ -6,7 +6,7 @@
 #   ./submit-genomechronicler.sh
 #
 # Before running:
-#   1. Deploy the CDK stack (see RUNBOOK.md)
+#   1. Deploy the CDK stack (see README_INFRASTRUCTURE.md)
 #   2. Upload your input data to S3:
 #        aws s3 cp your_file.vcf.gz s3://${BUCKET_NAME}/input/
 #        aws s3 cp samplesheet.csv s3://${BUCKET_NAME}/input/samplesheet.csv
@@ -31,7 +31,7 @@ if [[ -z "${JOB_QUEUE_ARN:-}" || -z "${JOB_DEF_ARN:-}" || -z "${BUCKET_NAME:-}" 
     --stack-name "$STACK_NAME" \
     --query 'Stacks[0].Outputs' \
     --output json 2>/dev/null) || {
-    echo "ERROR: Stack '$STACK_NAME' not found. Deploy it first (see RUNBOOK.md)."
+    echo "ERROR: Stack '$STACK_NAME' not found. Deploy it first (see README_INFRASTRUCTURE.md)."
     exit 1
   }
 

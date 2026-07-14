@@ -6,7 +6,7 @@
 #   ./submit-hello.sh
 #
 # Before running:
-#   1. Deploy the CDK stack (see RUNBOOK.md)
+#   1. Deploy the CDK stack (see README_INFRASTRUCTURE.md)
 #   2. Either let this script auto-detect outputs from CloudFormation,
 #      or set these env vars manually:
 #        export JOB_QUEUE_ARN=arn:aws:batch:...
@@ -27,7 +27,7 @@ if [[ -z "${JOB_QUEUE_ARN:-}" || -z "${JOB_DEF_ARN:-}" || -z "${BUCKET_NAME:-}" 
     --stack-name "$STACK_NAME" \
     --query 'Stacks[0].Outputs' \
     --output json 2>/dev/null) || {
-    echo "ERROR: Stack '$STACK_NAME' not found. Deploy it first (see RUNBOOK.md)."
+    echo "ERROR: Stack '$STACK_NAME' not found. Deploy it first (see README_INFRASTRUCTURE.md)."
     exit 1
   }
 
