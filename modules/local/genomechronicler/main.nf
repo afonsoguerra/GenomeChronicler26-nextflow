@@ -46,6 +46,13 @@ process GENOMECHRONICLER_RUN {
     def clean_arg   = params.no_clean_temp ? "--no_clean_temporary_files" : ''
 
     """
+    # Symlink GenomeChronicler's scripts and templates into the work directory
+    # (the tool uses relative paths and expects these in CWD)
+    ln -sf /GenomeChronicler/scripts scripts
+    ln -sf /GenomeChronicler/templates templates
+    ln -sf /GenomeChronicler/software software
+    ln -sf /GenomeChronicler/reference reference
+
     # Run GenomeChronicler
     genomechronicler \\
         ${bam_arg} \\
