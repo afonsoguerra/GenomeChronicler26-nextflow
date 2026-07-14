@@ -32,9 +32,6 @@ process GENOMECHRONICLER_RUN {
     tuple val(meta), path("results_${meta.id}/**"), emit: all_results
     path "versions.yml", emit: versions
 
-    when:
-    task.ext.when == null || task.ext.when
-
     script:
     def has_bam = bam.name != 'NO_FILE'
     def has_vcf = vcf.name != 'NO_FILE2'
