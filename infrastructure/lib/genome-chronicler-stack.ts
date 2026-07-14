@@ -223,7 +223,7 @@ export class GenomeChroniclerStack extends cdk.Stack {
     // ─── Batch Job Definition ──────────────────────────────────────────────────
     this.jobDefinition = new batch.EcsJobDefinition(this, 'HeadJobDef', {
       container: new batch.EcsEc2ContainerDefinition(this, 'HeadContainer', {
-        image: ecs.ContainerImage.fromRegistry('nextflow/nextflow:latest'),
+        image: ecs.ContainerImage.fromRegistry('nextflow/nextflow:26.04.6'),
         cpu: 2,
         memory: cdk.Size.mebibytes(4096),
         jobRole: this.headJobRole,
