@@ -23,7 +23,7 @@ process GENOMECHRONICLER_RUN {
     publishDir "${params.outdir}", mode: 'copy', pattern: '**'
 
     input:
-    tuple val(meta), path(bam), path(vcf), path(vep)
+    tuple val(meta), path(bam, arity: '0..1'), path(vcf, arity: '0..1'), path(vep, arity: '0..1')
 
     output:
     tuple val(meta), path("results_${meta.id}/*_report_*.pdf"), emit: report
@@ -36,10 +36,17 @@ process GENOMECHRONICLER_RUN {
     task.ext.when == null || task.ext.when
 
     script:
-    // Build the command dynamically based on which inputs are provided
-    def bam_arg  = meta.input_type == 'bam' ? "--bamFile ${bam}" : ''
-    def vcf_arg  = meta.input_type == 'vcf' ? "--vcfFile ${vcf}" : ''
-    def vep_arg  = meta.has_vep             ? "--vepFile ${vep}" : ''
+    def has_bam = bam instanceof List ? false : true
+    def has_vcf = vcf instanceof List ? false : true
+    def has_vep = vep instanceof List ? false : true
+
+    if (!has_bam && !has_vcf) {
+        error "Sample ${meta.id}: neither BAM nor VCF provided"
+    }
+
+    def bam_arg  = has_bam ? "--bamFile ${bam}" : ''
+    def vcf_arg  = has_vcf ? "--vcfFile ${vcf}" : ''
+    def vep_arg  = has_vep ? "--vepFile ${vep}" : ''
     def threads_arg = "--GATKthreads ${params.threads}"
     def clean_arg   = params.no_clean_temp ? "--no_clean_temporary_files" : ''
 
