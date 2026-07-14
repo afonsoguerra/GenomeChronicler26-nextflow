@@ -23,7 +23,7 @@ process GENOMECHRONICLER_RUN {
     publishDir "${params.outdir}", mode: 'copy', pattern: '**'
 
     input:
-    tuple val(meta), path(bam, stageAs: 'input_bam/*'), path(vcf, stageAs: 'input_vcf/*'), path(vep, stageAs: 'input_vep/*')
+    tuple val(meta), path(bam), path(vcf), path(vep)
 
     output:
     tuple val(meta), path("results_${meta.id}/*_report_*.pdf"), emit: report
@@ -37,9 +37,11 @@ process GENOMECHRONICLER_RUN {
 
     script:
     // Build the command dynamically based on which inputs are provided
-    def bam_arg  = meta.input_type == 'bam' ? "--bamFile input_bam/${bam.name}" : ''
-    def vcf_arg  = meta.input_type == 'vcf' ? "--vcfFile input_vcf/${vcf.name}" : ''
-    def vep_arg  = meta.has_vep             ? "--vepFile input_vep/${vep.name}" : ''
+    // Use find to locate staged files — avoids nested path issues on AWS Batch
+    // where stageAs + .name produces doubled directory paths
+    def bam_arg  = meta.input_type == 'bam' ? "--bamFile \$(find \$PWD -name '${bam.name}' -type f | head -1)" : ''
+    def vcf_arg  = meta.input_type == 'vcf' ? "--vcfFile \$(find \$PWD -name '${vcf.name}' -type f | head -1)" : ''
+    def vep_arg  = meta.has_vep             ? "--vepFile \$(find \$PWD -name '${vep.name}' -type f | head -1)" : ''
     def threads_arg = "--GATKthreads ${params.threads}"
     def clean_arg   = params.no_clean_temp ? "--no_clean_temporary_files" : ''
 
