@@ -1,0 +1,2 @@
+sample,bam,vcf,vep
+NA12878,,s3://genomechronicler-test-201263439413/input/NA12878.g.vcf.gz,
