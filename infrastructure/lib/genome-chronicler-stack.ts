@@ -190,7 +190,7 @@ export class GenomeChroniclerStack extends cdk.Stack {
         ],
         maxvCpus: 4,
         minvCpus: 0,
-        spot: true,
+        spot: false,
       },
     );
 
