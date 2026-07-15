@@ -163,8 +163,8 @@ export class GenomeChroniclerStack extends cdk.Stack {
     this.headJobRole.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogs',
-        actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-        resources: [this.logGroup.logGroupArn],
+        actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents', 'logs:GetLogEvents'],
+        resources: [this.logGroup.logGroupArn, `${this.logGroup.logGroupArn}:*`],
       }),
     );
 
@@ -212,9 +212,15 @@ export class GenomeChroniclerStack extends cdk.Stack {
         actions: [
           'batch:SubmitJob',
           'batch:DescribeJobs',
+          'batch:DescribeJobQueues',
+          'batch:DescribeJobDefinitions',
+          'batch:DescribeComputeEnvironments',
+          'batch:RegisterJobDefinition',
+          'batch:DeregisterJobDefinition',
           'batch:ListJobs',
           'batch:CancelJob',
           'batch:TerminateJob',
+          'batch:TagResource',
         ],
         resources: ['*'], // Batch actions require * for DescribeJobs/ListJobs
       }),
