@@ -41,12 +41,12 @@ workflow GENOMECHRONICLER {
             def meta = [
                 id:         row.sample,
                 input_type: has_bam ? 'bam' : 'vcf',
-                has_vep:    has_vep
+                has_vep:    has_vep ? true : false
             ]
 
-            def bam_file = has_bam ? file(row.bam, checkIfExists: true) : file("${projectDir}/assets/NO_FILE")
-            def vcf_file = has_vcf ? file(row.vcf, checkIfExists: true) : file("${projectDir}/assets/NO_FILE2")
-            def vep_file = has_vep ? file(row.vep, checkIfExists: true) : file("${projectDir}/assets/NO_FILE3")
+            def bam_file = has_bam ? file(row.bam, checkIfExists: true) : []
+            def vcf_file = has_vcf ? file(row.vcf, checkIfExists: true) : []
+            def vep_file = has_vep ? file(row.vep, checkIfExists: true) : []
 
             return [ meta, bam_file, vcf_file, vep_file ]
         }

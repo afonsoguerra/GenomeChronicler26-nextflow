@@ -26,7 +26,7 @@ nextflow
 testdata/create_test_vcf.py
 testdata/samplesheet_real.csv
 
-# CDK
+# CDK / Node
 infrastructure/node_modules/
 infrastructure/cdk.out/
-infrastructure/package-lock.json
+infrastructure/dist/

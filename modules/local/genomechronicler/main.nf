@@ -33,21 +33,23 @@ process GENOMECHRONICLER_RUN {
     path "versions.yml", emit: versions
 
     script:
-    def has_bam = bam.name != 'NO_FILE'
-    def has_vcf = vcf.name != 'NO_FILE2'
-    def has_vep = vep.name != 'NO_FILE3'
-
-    if (!has_bam && !has_vcf) {
-        error "Sample ${meta.id}: neither BAM nor VCF provided"
-    }
-
-    def bam_arg  = has_bam ? "--bamFile ${bam}" : ''
-    def vcf_arg  = has_vcf ? "--vcfFile ${vcf}" : ''
-    def vep_arg  = has_vep ? "--vepFile ${vep}" : ''
+    // Build the command dynamically based on which inputs are provided
+    // Use find to locate staged files — avoids nested path issues on AWS Batch
+    // where stageAs + .name produces doubled directory paths
+    def bam_arg  = meta.input_type == 'bam' ? "--bamFile \$(find \$PWD -name '${bam.name}' -type f | head -1)" : ''
+    def vcf_arg  = meta.input_type == 'vcf' ? "--vcfFile \$(find \$PWD -name '${vcf.name}' -type f | head -1)" : ''
+    def vep_arg  = meta.has_vep             ? "--vepFile \$(find \$PWD -name '${vep.name}' -type f | head -1)" : ''
     def threads_arg = "--GATKthreads ${params.threads}"
     def clean_arg   = params.no_clean_temp ? "--no_clean_temporary_files" : ''
 
     """
+    # Symlink GenomeChronicler's scripts and templates into the work directory
+    # (the tool uses relative paths and expects these in CWD)
+    ln -sf /GenomeChronicler/scripts scripts
+    ln -sf /GenomeChronicler/templates templates
+    ln -sf /GenomeChronicler/software software
+    ln -sf /GenomeChronicler/reference reference
+
     # Run GenomeChronicler
     genomechronicler \\
         ${bam_arg} \\
